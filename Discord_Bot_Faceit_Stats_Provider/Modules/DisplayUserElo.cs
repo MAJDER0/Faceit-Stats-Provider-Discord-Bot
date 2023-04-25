@@ -47,6 +47,24 @@ namespace Discord_Bot_Faceit_Stats_Provider.Commands
 
             await ctx.Channel.SendMessageAsync($"{nickname}'s elo is: {playerinf.games.csgo.faceit_elo}");
         }
+
+        [Command("ile")]
+
+        public async Task HowManyEloDoIlose(CommandContext ctx)
+        {
+            Random random = new Random();
+
+            int EloToLose = random.Next(0, 251);
+
+            await ctx.Channel.SendMessageAsync($"Ile elo dziś przepierdolisz? A tak z {EloToLose}");
+        }
+
+        [Command("Reivil")]
+
+        public async Task ReivilBot(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync("14 avg bot");
+        }
     }
 }
 
