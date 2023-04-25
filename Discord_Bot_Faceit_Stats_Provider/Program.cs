@@ -42,9 +42,10 @@ namespace Discord_Bot_Faceit_Stats_Provider
                 .Build();
 
             var BotService = host.Services.GetRequiredService<Bot>();
-           
 
-            await BotService.RunAsync();
+
+
+            await BotService.RunAsync(host.Services);
         }
     }
 }

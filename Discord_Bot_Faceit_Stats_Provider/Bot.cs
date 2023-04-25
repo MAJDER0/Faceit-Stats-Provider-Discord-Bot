@@ -22,7 +22,7 @@ namespace Discord_Bot_Faceit_Stats_Provider
         public InteractivityExtension Interactivity { get; private set; }
         public CommandsNextExtension Commands { get; private set; }
 
-        public async Task RunAsync()
+        public async Task RunAsync(IServiceProvider serviceProvider)
         {
 
             var json = string.Empty;
@@ -33,13 +33,13 @@ namespace Discord_Bot_Faceit_Stats_Provider
             var configJson = JsonConvert.DeserializeObject<ConfigJSON>(json);
 
 
-                var config = new DiscordConfiguration()
-                {
-                    Intents = DiscordIntents.All,
-                    Token = configJson.Token,
-                    TokenType = TokenType.Bot,
-                    AutoReconnect = true
-                };
+            var config = new DiscordConfiguration()
+            {
+                Intents = DiscordIntents.All,
+                Token = configJson.Token,
+                TokenType = TokenType.Bot,
+                AutoReconnect = true
+            };
 
 
             Client = new DiscordClient(config);
@@ -49,15 +49,9 @@ namespace Discord_Bot_Faceit_Stats_Provider
                 Timeout = TimeSpan.FromMinutes(2)
             });
 
-            var services = new ServiceCollection()
-                .AddSingleton<Bot>()
-                    .AddTransient<DisplayUserElo>()
-                    .BuildServiceProvider();
-
-
             var commands = Client.UseCommandsNext(new CommandsNextConfiguration()
             {
-                Services = services,
+                Services = serviceProvider,
                 StringPrefixes = new string[] { configJson.Prefix },
                 EnableMentionPrefix = true,
                 EnableDms = true,
@@ -68,11 +62,6 @@ namespace Discord_Bot_Faceit_Stats_Provider
 
             await Client.ConnectAsync();
             await Task.Delay(-1);
-        }
-
-        private Task OnClientReady(ReadyEventArgs e)
-        {
-            return Task.CompletedTask;
         }
     }
 }

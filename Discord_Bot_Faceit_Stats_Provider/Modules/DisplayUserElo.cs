@@ -27,8 +27,6 @@ namespace Discord_Bot_Faceit_Stats_Provider.Commands
             _httpClientFactory = httpClientFactory;
         }
 
-
-
         [Command("elo")]
 
         public async Task CheckElo(CommandContext ctx, string nickname)
