@@ -36,7 +36,7 @@ namespace Discord_Bot_Faceit_Stats_Provider
                     });
 
                     services.AddSingleton<Bot>();
-                    services.AddTransient<DisplayUserElo>();
+                    services.AddTransient<DcCommands>();
 
                 })
                 .Build();

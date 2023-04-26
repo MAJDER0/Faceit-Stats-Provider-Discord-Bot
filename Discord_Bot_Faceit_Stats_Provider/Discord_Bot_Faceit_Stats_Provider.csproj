@@ -1,5 +1,4 @@
-﻿
-<Project ToolsVersion="15.0">
+﻿<Project ToolsVersion="15.0">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -262,14 +261,10 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="ConfigJSON.cs" />
-    <Compile Include="Data\Csgo.cs" />
-    <Compile Include="Data\Games.cs" />
-    <Compile Include="Data\Infractions.cs" />
-    <Compile Include="Data\Platforms.cs" />
-    <Compile Include="Data\Regions.cs" />
-    <Compile Include="Data\Rootobject.cs" />
-    <Compile Include="Data\Settings.cs" />
-    <Compile Include="Modules\DisplayUserElo.cs" />
+    <Compile Include="Data\BasicPlayerInformations.cs" />
+    <Compile Include="Data\LastMatch.cs" />
+    <Compile Include="Data\MatchesHistory.cs" />
+    <Compile Include="Modules\DcCommands.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
