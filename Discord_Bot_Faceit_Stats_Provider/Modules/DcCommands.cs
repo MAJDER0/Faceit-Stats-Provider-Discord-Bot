@@ -12,6 +12,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Discord_Bot_Faceit_Stats_Provider.Data.LastMatch;
 
 namespace Discord_Bot_Faceit_Stats_Provider.Commands
 {
@@ -41,6 +42,7 @@ namespace Discord_Bot_Faceit_Stats_Provider.Commands
             try
             {
                 playerinf = await client.GetFromJsonAsync<BasicPlayerInformations.Rootobject>($"v4/players?nickname={nickname}");
+
                 errorString = null;
 
             }
@@ -67,16 +69,26 @@ namespace Discord_Bot_Faceit_Stats_Provider.Commands
         public async Task HowManyEloDoIlose(CommandContext ctx)
         {
             Random random = new Random();
+            Random random2 = new Random();
 
-            int EloToLose = random.Next(0, 251);
+            int EloToLoseOrWin = random.Next(0, 201);
+            int WinOrLose = random2.Next(0,2);
 
-            if (EloToLose >= 100)
+            if (WinOrLose == 0)
             {
-                await ctx.Channel.SendMessageAsync($"Ile elo dziś przepierdolisz? A tak ze {EloToLose}");
+                if (EloToLoseOrWin >= 100)
+                {
+                    await ctx.Channel.SendMessageAsync($"Ile elo dziś przepierdolisz? A tak ze {EloToLoseOrWin}");
+                }
+                else
+                {
+                    await ctx.Channel.SendMessageAsync($"Ile elo dziś przepierdolisz? A tak z {EloToLoseOrWin}");
+                }
             }
-            else
+
+            else 
             {
-                await ctx.Channel.SendMessageAsync($"Ile elo dziś przepierdolisz? A tak z {EloToLose}");
+                    await ctx.Channel.SendMessageAsync($"Ile elo dziś przepierdolisz? Dziś tylko wygrywasz stary, {EloToLoseOrWin} elo na +");
             }
         }
 
@@ -86,7 +98,8 @@ namespace Discord_Bot_Faceit_Stats_Provider.Commands
 
         public async Task ReivilBot(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync("14 avg bot");
+            await ctx.Channel.SendMessageAsync("14 avg bot w twojej okolicy, kliknij w link \n" +
+                "https://www.youtube.com/watch?v=i7Bsp1e0tNw&ab_channel=Reivil");
         }
 
         //lastmatch
@@ -111,21 +124,70 @@ namespace Discord_Bot_Faceit_Stats_Provider.Commands
                 errorString = $"Error: {ex.Message}";
             }
 
-            StringBuilder statsBuilder = new StringBuilder();
-
-            statsBuilder.AppendLine($"{playerinf.nickname}'s last match stats: ");
-
-            foreach (var round in lastmatch.rounds)
+            if (playerinf != null)
             {
-                var playerStats = round.teams.SelectMany(t => t.players).FirstOrDefault(p => p.nickname == playerinf.nickname)?.player_stats;
-                if (playerStats != null)
-                {
-                    decimal KdRatio = (Decimal.Parse(playerStats.Kills) / Decimal.Parse(playerStats.Deaths));
-                    statsBuilder.AppendLine($"Kills: {playerStats.Kills}, Deaths: {playerStats.Deaths}, Assists: {playerStats.Assists}, K/D Ratio: {KdRatio.ToString("F2")}, K/R Ratio: {playerStats.K_R_Ratio}");
-                }
-            }      
+                StringBuilder statsBuilder = new StringBuilder();
 
-            await ctx.Channel.SendMessageAsync(statsBuilder.ToString());
+                statsBuilder.AppendLine($"{playerinf.nickname}'s last match stats: ");
+
+                foreach (var round in lastmatch.rounds)
+                {
+                    var playerStats = round.teams.SelectMany(t => t.players).FirstOrDefault(p => p.nickname == playerinf.nickname)?.player_stats;
+
+                    if (playerStats != null)
+                    {
+                        decimal Kills = Decimal.Parse(playerStats.Kills);
+
+                        decimal Deaths = Decimal.Parse(playerStats.Deaths);
+
+                        decimal RoundsPlayed = Decimal.Parse(round.round_stats.Rounds);
+
+                        //decimal Assists = Decimal.Parse(playerStats.Assists);
+
+                        decimal KdRatio = Kills / Deaths;
+
+                        decimal KrRatio = Kills / RoundsPlayed;
+
+                        //decimal SurvivedRounds = (RoundsPlayed - Deaths) * 100;
+
+                        //decimal Impact = (Kills + Assists - Deaths + 4 + 0.5M * 4) / (16 + 8);
+
+                        //decimal KillsDamage = Kills * 100;
+
+                        //decimal AssistsDamage = Assists * 50;
+
+                        //decimal ADR = (KillsDamage + AssistsDamage) / RoundsPlayed;
+
+                        //decimal DeathsPerRound = Deaths/RoundsPlayed;
+
+                        //decimal KAST = (Kills + Assists + SurvivedRounds) / RoundsPlayed-5;
+
+                        //decimal HLTVrating = (0.405022M * KrRatio) - (0.657678M * DeathsPerRound) + (0.524246M * KAST) / 100 + Impact / 5 + (0.00410341M * ADR) + 0.343334M;
+
+                        string result = string.Empty;
+
+                        if (playerStats.Result == 1.ToString())
+                        {
+                            result = "Win";
+                        }
+                        else
+                        {
+                            result = "Lose";
+                        }
+
+                        statsBuilder.AppendLine($"Result: {result}, Score: {round.round_stats.Score}, Kills: {playerStats.Kills}, Deaths: {playerStats.Deaths}, Assists: {playerStats.Assists}, K/D Ratio: {KdRatio.ToString("F2")} K/R Ratio: {KrRatio.ToString("F2")}");
+                    }
+                }
+
+                await ctx.Channel.SendMessageAsync(statsBuilder.ToString());
+
+                playerinf = null;
+            }
+
+            else
+            {
+                await ctx.Channel.SendMessageAsync("There is no such a player in the database.");
+            }
         }
     }
 }
