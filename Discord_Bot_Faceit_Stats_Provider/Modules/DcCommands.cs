@@ -271,7 +271,7 @@ namespace Discord_Bot_Faceit_Stats_Provider.Commands
 
             else
             {
-                await ctx.Channel.SendMessageAsync("There is no such a player in the database.");
+                await ctx.Channel.SendMessageAsync("There is no such a player in the database. Please try again.");
             }
         }
     }
